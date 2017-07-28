@@ -8,4 +8,9 @@ public class Util
     {
         return Vector3.SqrMagnitude(a - b) < accuracy;
     }
+
+    public static bool VecAlmostEqual(Vector2 a, Vector2 b, float accuracy)
+    {
+        return Vector2.SqrMagnitude(a - b) < accuracy;
+    }
 }
