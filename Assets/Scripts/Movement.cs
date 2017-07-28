@@ -14,6 +14,7 @@ public class Movement : MonoBehaviour
     float accelration;
     float gravity = 9.81f;
     bool canJump;
+    bool canDoubleJump;
     Vector2 velocity;
     Vector2 lastPos;
     // Use this for initialization
@@ -37,37 +38,46 @@ public class Movement : MonoBehaviour
     void FixedUpdate()
     {
         velocity = Vector2.zero;
+        RaycastHit2D hitInfo;
 
-        RaycastHit hitInfo;
+
         float moveX = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(Mathf.Clamp(moveX * speed,-speed,speed), rb.velocity.y);
-        /* ACCELRATION STUFF IF WANTED
-        if (moveX == 0)
+        if (moveX != 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x * accelration * Time.deltaTime, rb.velocity.y);
-        }
-        */
-        /*
-        if (Physics.Raycast(transform.position, Vector2.down, out hitInfo))
-        {
-            
-            if (hitInfo.distance > 1f)
+            if (moveX < 0)
             {
-                velocity.y += -gravity * Time.deltaTime;
-                rb.MovePosition(new Vector2(transform.position.x, transform.position.y + velocity.y));
-                Debug.Log(hitInfo.distance);
-            }   
-            */
+                hitInfo = Physics2D.Raycast(transform.position, Vector3.left);
+                Debug.DrawRay(transform.position + new Vector3(-0.5f, 0), Vector3.left, Color.red);
+            }
+            else if (moveX > 0)
+            {
+                hitInfo = Physics2D.Raycast(transform.position, Vector3.right);
+                Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector3.right, Color.red);
+            }
+
+            else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
+
+            if (hitInfo.distance < 0.52f && hitInfo.distance != 0)
+            {
+                moveX = 0;
+            }
         }
+        rb.velocity = new Vector2(Mathf.Clamp(moveX * speed, -speed, speed), rb.velocity.y);
+
+    }
+
+    /* ACCELRATION STUFF IF WANTED
+    if (moveX == 0)
+    {
+        rb.velocity = new Vector2(rb.velocity.x * accelration * Time.deltaTime, rb.velocity.y);
+    }
+    */
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log(col.contacts[0].normal);
-        if (col.contacts[0].normal == Vector2.up)
+        if (Util.VecAlmostEqual(Vector2.up, col.contacts[0].normal, 0.001f))
         {
-            Debug.Log("Can Jump");
             canJump = true;
         }
-            
     }
 }
