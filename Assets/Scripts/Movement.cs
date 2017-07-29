@@ -20,12 +20,14 @@ public class Movement : MonoBehaviour
 
     float accelration;
     float movementPush;
+    Vector2 platformPush;
     float gravity = 9.81f;
     float maxSpeed = 0;
     bool canJump;
     bool canWallJump;
     bool canMove;
     RaycastHit2D hitInfo;
+
 
     // Use this for initialization
     void Start()
@@ -78,6 +80,7 @@ public class Movement : MonoBehaviour
         if (movementPush > 0.1f) movementPush -= movPushTime * 5 * Time.deltaTime;
         else if (movementPush < -0.1f) movementPush += movPushTime * 5 * Time.deltaTime;
         else if (movementPush < 0.1f || movementPush > -0.1f) movementPush = 0f;
+
     }
 
     // Update is called once per frame
@@ -99,28 +102,31 @@ public class Movement : MonoBehaviour
 
             else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
 
-            if (hitInfo.distance < 0.52f && hitInfo.distance != 0 && (movementPush < movPushX * 0.7f && movementPush > movPushX * 0.7f))
+            if (hitInfo.distance < 0.52f && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
             {
                 moveX = 0;
                 Debug.Log(rb.velocity.y);
                 rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
             }
         }
-        //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
+        if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
 
         if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
         if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
 
         moveX += movementPush;
+        
         maxSpeed = speed * 3;
         if (Input.GetKey(KeyCode.LeftShift))
         {
             moveX *= runningSpeed;
             maxSpeed = moveX * runningSpeed;
         }
-        rb.velocity = new Vector2(Mathf.Clamp(moveX * Time.fixedDeltaTime * 100 * speed, -maxSpeed, maxSpeed), rb.velocity.y);
+        float finalMovement = moveX * Time.fixedDeltaTime * 100 * speed;
+        if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.3f;
+        rb.velocity = new Vector2(Mathf.Clamp(finalMovement, -maxSpeed, maxSpeed), rb.velocity.y);
 
-
+        platformPush = Vector2.zero;
         // Sprite rotation
         if (rb.velocity.x < 0) rb.transform.localScale = new Vector3(-1, 1, 1);
         else if (rb.velocity.x > 0) rb.transform.localScale = new Vector3(1, 1, 1);
@@ -139,6 +145,14 @@ public class Movement : MonoBehaviour
         {
             canJump = true;
             canWallJump = true;
+        }
+    }
+
+    void OnCollisionStay2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "platform")
+        {
+            platformPush = col.gameObject.GetComponent<MovingPlatform>().velocity;
         }
     }
 
