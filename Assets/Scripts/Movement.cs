@@ -57,7 +57,7 @@ public class Movement : MonoBehaviour
             }
             else
             {
-                hitInfo = Physics2D.Raycast(transform.position + new Vector3(-0.5f, 0), Vector3.left);
+                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.left);
                 if (hitInfo.distance < 0.6f)
                 {
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
@@ -66,7 +66,7 @@ public class Movement : MonoBehaviour
                 }
                 else
                 {
-                    hitInfo = Physics2D.Raycast(transform.position + new Vector3(0.5f, 0), Vector3.right);
+                    hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.right);
                     if (hitInfo.distance < 0.6f)
                     {
                         rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
@@ -106,7 +106,6 @@ public class Movement : MonoBehaviour
             if (hitInfo.distance < 0.52f && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
             {
                 moveX = 0;
-                Debug.Log(rb.velocity.y);
                 rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
             }
         }
