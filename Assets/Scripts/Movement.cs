@@ -28,11 +28,14 @@ public class Movement : MonoBehaviour
     bool canMove;
     RaycastHit2D hitInfo;
 
+    Animator animator;
+
 
     // Use this for initialization
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -53,6 +56,7 @@ public class Movement : MonoBehaviour
                 {
                     rb.velocity = new Vector2(0, jumpStrength);
                     canJump = false;
+                    animator.SetTrigger("Jump");
                 }
             }
             else
@@ -80,7 +84,8 @@ public class Movement : MonoBehaviour
         if (movementPush > 0.1f) movementPush -= movPushTime * 5 * Time.deltaTime;
         else if (movementPush < -0.1f) movementPush += movPushTime * 5 * Time.deltaTime;
         else if (movementPush < 0.1f || movementPush > -0.1f) movementPush = 0f;
-
+        
+        animator.SetFloat("VelocityY", rb.velocity.y);
     }
 
     // Update is called once per frame
@@ -145,6 +150,7 @@ public class Movement : MonoBehaviour
         {
             canJump = true;
             canWallJump = true;
+            animator.SetTrigger("HitGround");
         }
     }
 
