@@ -12,8 +12,13 @@ public class Movement : MonoBehaviour
     public float jumpStrength;
     [Range(0, 8)]
     public float slideSpeed;
+    [Range(0, 8)]
+    public float movementPushAmountX;
+    [Range(0, 10)]
+    public float movementControl;
 
     float accelration;
+    float movementPush;
     float gravity = 9.81f;
     bool canJump;
     bool canWallJump;
@@ -27,10 +32,14 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        //Jump Start
         if (Input.GetKeyDown(KeyCode.W))
         {
             hitInfo = Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
             if (hitInfo.distance < 0.15f)
+            {
+                canJump = true;
+            }
             if (canJump)
             {
                 hitInfo = Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
@@ -40,28 +49,35 @@ public class Movement : MonoBehaviour
                     rb.velocity = new Vector2(0, jumpStrength);
                     canJump = false;
                 }
+
             }
-            else if (canWallJump)
+            else
             {
                 hitInfo = Physics2D.Raycast(transform.position + new Vector3(-0.5f, 0), Vector3.left);
                 if (hitInfo.distance < 0.6f)
                 {
-                    rb.velocity = new Vector2(1.0f, jumpStrength);
+                    Debug.Log("Jump right");
+                    rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
+                    movementPush = 3f;
                     canWallJump = false;
                 }
                 else
                 {
-                    hitInfo = Physics2D.Raycast(transform.position + new Vector3(0.5f, 0), Vector3.left);
+                    hitInfo = Physics2D.Raycast(transform.position + new Vector3(0.5f, 0), Vector3.right);
                     if (hitInfo.distance < 0.6f)
                     {
-                        rb.velocity = new Vector2(-1.0f, jumpStrength);
+                        Debug.Log("Jump left");
+                        rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
+                        movementPush = -3f;
                         canWallJump = false;
                     }
                 }
             }
-
         }
-
+        //Jump End
+        if (movementPush > 0.1f) movementPush -= movementPushAmountX * 5 * Time.deltaTime;
+        else if (movementPush < -0.1f) movementPush += movementPushAmountX * 5 * Time.deltaTime;
+        else if (movementPush < 0.1f || movementPush > -0.1f) movementPush = 0f;
     }
 
     // Update is called once per frame
@@ -83,13 +99,20 @@ public class Movement : MonoBehaviour
 
             else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
 
-            if (hitInfo.distance < 0.52f && hitInfo.distance != 0)
+            if (hitInfo.distance < 0.52f && hitInfo.distance != 0 && (movementPush < 2.0f && movementPush > -2.0f))
             {
                 moveX = 0;
                 Debug.Log(rb.velocity.y);
                 rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
             }
         }
+        //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
+
+        if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
+        else if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
+
+        Debug.Log(moveX);
+        moveX += movementPush;
         rb.velocity = new Vector2(moveX * Time.fixedDeltaTime * 100 * speed, rb.velocity.y);
 
     }
