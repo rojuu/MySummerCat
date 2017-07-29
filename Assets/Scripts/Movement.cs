@@ -109,7 +109,7 @@ public class Movement : MonoBehaviour
                 rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
             }
         }
-        if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
+        //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
 
         if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
         if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
