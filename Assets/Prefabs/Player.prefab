@@ -241,7 +241,7 @@ MonoBehaviour:
   speed: 15
   runningSpeed: 1.5
   jumpStrength: 22
-  slideSpeed: 1
+  slideSpeed: 4
   movPushTime: 1
   movPushX: 3
 --- !u!212 &212591600676664412
