@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class MovingPlatform : MonoBehaviour
 {
@@ -33,6 +35,7 @@ public class MovingPlatform : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (Application.isPlaying)
@@ -50,4 +53,5 @@ public class MovingPlatform : MonoBehaviour
         Handles.color = Color.yellow;
         Handles.DrawLine(transform.position, transform.position + targetPosition);
     }
+#endif
 }

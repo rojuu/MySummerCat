@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class RotatingPlatform : MonoBehaviour
 {
@@ -34,6 +36,7 @@ public class RotatingPlatform : MonoBehaviour
         angle = angle % 360;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (Application.isPlaying)
@@ -41,4 +44,5 @@ public class RotatingPlatform : MonoBehaviour
 
         Handles.DrawWireDisc(transform.position, Vector3.forward, radius);
     }
+#endif
 }
