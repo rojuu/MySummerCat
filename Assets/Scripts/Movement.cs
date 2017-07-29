@@ -117,11 +117,11 @@ public class Movement : MonoBehaviour
 
         moveX += movementPush;
         
-        maxSpeed = speed * 3;
+        maxSpeed = speed;
         if (Input.GetKey(KeyCode.LeftShift))
         {
             moveX *= runningSpeed;
-            maxSpeed = moveX * runningSpeed;
+            maxSpeed =  speed * runningSpeed;
         }
         float finalMovement = moveX * Time.fixedDeltaTime * 100 * speed;
         if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.3f;
