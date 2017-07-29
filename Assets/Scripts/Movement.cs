@@ -22,6 +22,7 @@ public class Movement : MonoBehaviour
     bool canJump;
     bool canWallJump;
     RaycastHit2D hitInfo;
+    RaycastHit2D[] jumpHit;
 
     // Use this for initialization
     void Start()
@@ -34,7 +35,8 @@ public class Movement : MonoBehaviour
         //Jump Start
         if (Input.GetKeyDown(KeyCode.W))
         {
-            hitInfo = Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
+            hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.down);//rb.Cast(Vector2.down, jumpHit); //Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
+
             if (hitInfo.distance < 0.15f)
             {
                 canJump = true;
@@ -44,18 +46,15 @@ public class Movement : MonoBehaviour
                 hitInfo = Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
                 if (hitInfo.distance < 0.15f)
                 {
-                    Debug.Log("canjump");
                     rb.velocity = new Vector2(0, jumpStrength);
                     canJump = false;
                 }
-
             }
             else
             {
                 hitInfo = Physics2D.Raycast(transform.position + new Vector3(-0.5f, 0), Vector3.left);
                 if (hitInfo.distance < 0.6f)
                 {
-                    Debug.Log("Jump right");
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                     movementPush = 3f;
                     canWallJump = false;
@@ -65,7 +64,6 @@ public class Movement : MonoBehaviour
                     hitInfo = Physics2D.Raycast(transform.position + new Vector3(0.5f, 0), Vector3.right);
                     if (hitInfo.distance < 0.6f)
                     {
-                        Debug.Log("Jump left");
                         rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                         movementPush = -3f;
                         canWallJump = false;
@@ -107,13 +105,17 @@ public class Movement : MonoBehaviour
         }
         //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
 
-        if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
-        else if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
+        //if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
+        //if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
 
         Debug.Log(moveX);
         moveX += movementPush;
-        rb.velocity = new Vector2(moveX * Time.fixedDeltaTime * 100 * speed, rb.velocity.y);
+        rb.velocity = new Vector2(Mathf.Clamp(moveX * Time.fixedDeltaTime * 100 * speed,-speed*3,speed*3), rb.velocity.y);
 
+
+        // Sprite rotation
+        if (rb.velocity.x < 0) rb.transform.localScale = new Vector3(-1, 1, 1);
+        else if (rb.velocity.x > 0) rb.transform.localScale = new Vector3(1, 1, 1);
     }
 
     /* ACCELRATION STUFF IF WANTED
