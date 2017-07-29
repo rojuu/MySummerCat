@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - platform
+  - RotPlatform
+  - MovPlatform
   layers:
   - Default
   - TransparentFX

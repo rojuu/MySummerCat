@@ -13,10 +13,14 @@ public class RotatingPlatform : MonoBehaviour
     float _angle;
     public float speed;
 
+    Vector3 lastFramesPosition;
+    public Vector2 velocity;
+
     void Start()
     {
         center = transform.position;
         _angle = angle * Mathf.Deg2Rad;
+        lastFramesPosition = transform.position;
     }
 
     void Update()
@@ -33,6 +37,10 @@ public class RotatingPlatform : MonoBehaviour
         );
 
         _angle = _angle % 360;
+
+        velocity = (transform.position - lastFramesPosition) / Time.deltaTime;
+
+        lastFramesPosition = transform.position;
     }
 
 #if UNITY_EDITOR

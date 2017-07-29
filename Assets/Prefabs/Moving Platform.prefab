@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 61289599853996670}
   m_Layer: 0
   m_Name: Moving Platform
-  m_TagString: Untagged
+  m_TagString: MovPlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -80,6 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetPosition: {x: 3, y: 0, z: 0}
   lerpTime: 3
+  velocity: {x: 0, y: 0}
 --- !u!212 &212624157498063536
 SpriteRenderer:
   m_ObjectHideFlags: 1
