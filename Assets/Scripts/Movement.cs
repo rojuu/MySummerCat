@@ -25,7 +25,9 @@ public class Movement : MonoBehaviour
     float maxSpeed = 0;
     bool canJump;
     bool canWallJump;
-    bool canMove;
+    bool canMove = true;
+    bool isDead;
+
     RaycastHit2D hitInfo;
 
     Animator animator;
@@ -40,20 +42,19 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+
+        if (!canMove) return;
+
         //Jump Start
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Jump"))
         {
             hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.down);//rb.Cast(Vector2.down, jumpHit); //Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
 
-            if (hitInfo.distance < 0.15f)
+            if (hitInfo.distance < 0.6f)
             {
-                canJump = true;
-            }
-            if (canJump)
-            {
-                    rb.velocity = new Vector2(0, jumpStrength);
-                    canJump = false;
-                    animator.SetTrigger("Jump");
+                rb.velocity = new Vector2(0, jumpStrength);
+                canJump = false;
+                animator.SetTrigger("Jump");
             }
             else
             {
@@ -63,6 +64,7 @@ public class Movement : MonoBehaviour
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                     movementPush = movPushX;
                     canWallJump = false;
+                    animator.SetTrigger("Jump");
                 }
                 else
                 {
@@ -72,22 +74,26 @@ public class Movement : MonoBehaviour
                         rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                         movementPush = -movPushX;
                         canWallJump = false;
+                        animator.SetTrigger("Jump");
                     }
                 }
             }
         }
+
         //Jump End
         if (movementPush > 0.1f) movementPush -= movPushTime * 5 * Time.deltaTime;
         else if (movementPush < -0.1f) movementPush += movPushTime * 5 * Time.deltaTime;
         else if (movementPush < 0.1f || movementPush > -0.1f) movementPush = 0f;
-        
+
         animator.SetFloat("VelocityY", rb.velocity.y);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!canMove) return;
         float moveX = Input.GetAxisRaw("Horizontal");
+        animator.SetFloat("VelocityX", Mathf.Abs(moveX));
         if (moveX != 0)
         {
             if (moveX < 0)
@@ -115,12 +121,12 @@ public class Movement : MonoBehaviour
         if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
 
         moveX += movementPush;
-        
+
         maxSpeed = speed;
         if (Input.GetKey(KeyCode.LeftShift))
         {
             moveX *= runningSpeed;
-            maxSpeed =  speed * runningSpeed;
+            maxSpeed = speed * runningSpeed;
         }
         float finalMovement = moveX * Time.fixedDeltaTime * 100 * speed;
         if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.3f;
@@ -130,6 +136,7 @@ public class Movement : MonoBehaviour
         // Sprite rotation
         if (rb.velocity.x < 0) rb.transform.localScale = new Vector3(-1, 1, 1);
         else if (rb.velocity.x > 0) rb.transform.localScale = new Vector3(1, 1, 1);
+
     }
 
     /* ACCELRATION STUFF IF WANTED
@@ -161,5 +168,23 @@ public class Movement : MonoBehaviour
         }
     }
 
+    public void KillPlayer(Vector3 pos, float delay)
+    {
+        canMove = false;
+        rb.velocity = Vector2.zero;
+        GetComponentInChildren<TrailRenderer>().enabled = false;
+        GetComponent<SpriteRenderer>().enabled = false;
+        GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+        StartCoroutine(IsDead(true, pos, delay));
+    }
 
+    IEnumerator IsDead(bool val, Vector3 pos, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        GetComponentInChildren<TrailRenderer>().enabled = true;
+        GetComponent<SpriteRenderer>().enabled = true;
+        GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        transform.position = pos;
+        canMove = val;
+    }
 }
