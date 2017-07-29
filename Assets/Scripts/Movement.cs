@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-
     Rigidbody2D rb;
     [Range(0, 15)]
     public float speed;
