@@ -26,6 +26,7 @@ public class Movement : MonoBehaviour
     bool canJump;
     bool canWallJump;
     bool canMove = true;
+    bool wallClinging;
     bool isDead;
 
     RaycastHit2D hitInfo;
@@ -42,7 +43,6 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-
         if (!canMove) return;
 
         //Jump Start
@@ -91,6 +91,7 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        animator.SetBool("WallCling", false);
         if (!canMove) return;
         float moveX = Input.GetAxisRaw("Horizontal");
         animator.SetFloat("VelocityX", Mathf.Abs(moveX));
@@ -112,7 +113,9 @@ public class Movement : MonoBehaviour
             if (hitInfo.distance < 0.52f && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
             {
                 moveX = 0;
+                wallClinging = true;
                 rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
+                animator.SetBool("WallCling", true);
             }
         }
         //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
@@ -154,6 +157,18 @@ public class Movement : MonoBehaviour
             canWallJump = true;
             animator.SetTrigger("HitGround");
         }
+        /*
+        if (col.gameObject.tag == "RotPlatform")
+        {
+            hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.down);
+            if (hitInfo.distance < .6f)
+            {
+                //rb.MovePosition(new Vector2(0, -hitInfo.distance));
+                //rb.velocity = new Vector2(rb.velocity.x, 5f / (hitInfo.distance * 4));
+                Debug.Log(hitInfo.distance);
+            }
+        }
+        */
     }
 
     void OnCollisionStay2D(Collision2D col)
@@ -167,7 +182,21 @@ public class Movement : MonoBehaviour
             platformPush = col.gameObject.GetComponent<RotatingPlatform>().velocity;
         }
     }
-
+    /*
+    void OnCollisionExit2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "RotPlatform")
+        {
+            hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.down);
+            if (hitInfo.distance < .6f)
+            {
+                //rb.MovePosition(new Vector2(0, -hitInfo.distance));
+                rb.velocity = new Vector2(rb.velocity.x, 60 );
+                Debug.Log(hitInfo.distance);
+            }
+        }
+    }
+    */
     public void KillPlayer(Vector3 pos, float delay)
     {
         canMove = false;
