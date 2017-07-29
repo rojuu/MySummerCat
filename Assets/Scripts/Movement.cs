@@ -51,13 +51,9 @@ public class Movement : MonoBehaviour
             }
             if (canJump)
             {
-                hitInfo = Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
-                if (hitInfo.distance < 0.15f)
-                {
                     rb.velocity = new Vector2(0, jumpStrength);
                     canJump = false;
                     animator.SetTrigger("Jump");
-                }
             }
             else
             {
@@ -97,12 +93,12 @@ public class Movement : MonoBehaviour
             if (moveX < 0)
             {
                 hitInfo = Physics2D.Raycast(transform.position, Vector3.left);
-                Debug.DrawRay(transform.position + new Vector3(-0.5f, 0), Vector3.left, Color.red);
+                //Debug.DrawRay(transform.position + new Vector3(-0.5f, 0), Vector3.left, Color.red);
             }
             else if (moveX > 0)
             {
                 hitInfo = Physics2D.Raycast(transform.position, Vector3.right);
-                Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector3.right, Color.red);
+                //Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector3.right, Color.red);
             }
 
             else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
@@ -156,9 +152,13 @@ public class Movement : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D col)
     {
-        if (col.gameObject.tag == "platform")
+        if (col.gameObject.tag == "MovPlatform")
         {
             platformPush = col.gameObject.GetComponent<MovingPlatform>().velocity;
+        }
+        if (col.gameObject.tag == "RotPlatform")
+        {
+            platformPush = col.gameObject.GetComponent<RotatingPlatform>().velocity;
         }
     }
 
