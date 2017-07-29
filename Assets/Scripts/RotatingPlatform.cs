@@ -9,11 +9,8 @@ public class RotatingPlatform : MonoBehaviour
 {
     public float radius;
     Vector3 center;
-    float angle;
+    public float angle;
     public float speed;
-
-    public float lerpTime = 3f;
-    float currentLerpTime = 0;
 
     void Start()
     {
