@@ -239,8 +239,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 6.12
+  runningSpeed: 2
   jumpStrength: 22
-  slideSpeed: 0
+  slideSpeed: 1
+  movPushTime: 1
+  movPushX: 3
 --- !u!212 &212591600676664412
 SpriteRenderer:
   m_ObjectHideFlags: 1
