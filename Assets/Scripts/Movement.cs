@@ -7,22 +7,25 @@ public class Movement : MonoBehaviour
     Rigidbody2D rb;
     [Range(0, 15)]
     public float speed;
+    [Range(0, 5)]
+    public float runningSpeed;
     [Range(0, 45)]
     public float jumpStrength;
     [Range(0, 8)]
     public float slideSpeed;
     [Range(0, 8)]
-    public float movementPushAmountX;
-    [Range(0, 10)]
-    public float movementControl;
+    public float movPushTime;
+    [Range(0, 5)]
+    public float movPushX;
 
     float accelration;
     float movementPush;
     float gravity = 9.81f;
+    float maxSpeed = 0;
     bool canJump;
     bool canWallJump;
+    bool canMove;
     RaycastHit2D hitInfo;
-    RaycastHit2D[] jumpHit;
 
     // Use this for initialization
     void Start()
@@ -33,7 +36,7 @@ public class Movement : MonoBehaviour
     void Update()
     {
         //Jump Start
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
         {
             hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.down);//rb.Cast(Vector2.down, jumpHit); //Physics2D.Raycast(transform.position + new Vector3(0, -.5f), Vector3.down);
 
@@ -56,7 +59,7 @@ public class Movement : MonoBehaviour
                 if (hitInfo.distance < 0.6f)
                 {
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
-                    movementPush = 3f;
+                    movementPush = movPushX;
                     canWallJump = false;
                 }
                 else
@@ -65,15 +68,15 @@ public class Movement : MonoBehaviour
                     if (hitInfo.distance < 0.6f)
                     {
                         rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
-                        movementPush = -3f;
+                        movementPush = -movPushX;
                         canWallJump = false;
                     }
                 }
             }
         }
         //Jump End
-        if (movementPush > 0.1f) movementPush -= movementPushAmountX * 5 * Time.deltaTime;
-        else if (movementPush < -0.1f) movementPush += movementPushAmountX * 5 * Time.deltaTime;
+        if (movementPush > 0.1f) movementPush -= movPushTime * 5 * Time.deltaTime;
+        else if (movementPush < -0.1f) movementPush += movPushTime * 5 * Time.deltaTime;
         else if (movementPush < 0.1f || movementPush > -0.1f) movementPush = 0f;
     }
 
@@ -96,7 +99,7 @@ public class Movement : MonoBehaviour
 
             else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
 
-            if (hitInfo.distance < 0.52f && hitInfo.distance != 0 && (movementPush < 2.0f && movementPush > -2.0f))
+            if (hitInfo.distance < 0.52f && hitInfo.distance != 0 && (movementPush < movPushX * 0.7f && movementPush > movPushX * 0.7f))
             {
                 moveX = 0;
                 Debug.Log(rb.velocity.y);
@@ -105,12 +108,17 @@ public class Movement : MonoBehaviour
         }
         //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
 
-        //if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
-        //if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
+        if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
+        if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
 
-        Debug.Log(moveX);
         moveX += movementPush;
-        rb.velocity = new Vector2(Mathf.Clamp(moveX * Time.fixedDeltaTime * 100 * speed,-speed*3,speed*3), rb.velocity.y);
+        maxSpeed = speed * 3;
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            moveX *= runningSpeed;
+            maxSpeed = moveX * runningSpeed;
+        }
+        rb.velocity = new Vector2(Mathf.Clamp(moveX * Time.fixedDeltaTime * 100 * speed, -maxSpeed, maxSpeed), rb.velocity.y);
 
 
         // Sprite rotation
@@ -133,4 +141,6 @@ public class Movement : MonoBehaviour
             canWallJump = true;
         }
     }
+
+
 }
