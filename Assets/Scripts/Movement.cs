@@ -59,7 +59,7 @@ public class Movement : MonoBehaviour
             else
             {
                 hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.left);
-                if (hitInfo.distance < 0.6f)
+                if (hitInfo.distance < 0.6f && hitInfo.collider.tag != "Lava")
                 {
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                     movementPush = movPushX;
@@ -69,7 +69,7 @@ public class Movement : MonoBehaviour
                 else
                 {
                     hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.right);
-                    if (hitInfo.distance < 0.6f)
+                    if (hitInfo.distance < 0.6f && hitInfo.collider.tag != "Lava")
                     {
                         rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                         movementPush = -movPushX;
@@ -94,17 +94,17 @@ public class Movement : MonoBehaviour
         animator.SetBool("WallCling", false);
         if (!canMove) return;
         float moveX = Input.GetAxisRaw("Horizontal");
-        animator.SetFloat("VelocityX", Mathf.Abs(moveX));
+
         if (moveX != 0)
         {
             if (moveX < 0)
             {
-                hitInfo = Physics2D.Raycast(transform.position, Vector3.left);
+                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.52f, 0, Vector2.left);
                 //Debug.DrawRay(transform.position + new Vector3(-0.5f, 0), Vector3.left, Color.red);
             }
             else if (moveX > 0)
             {
-                hitInfo = Physics2D.Raycast(transform.position, Vector3.right);
+                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.52f, 0, Vector2.right);
                 //Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector3.right, Color.red);
             }
 
@@ -134,7 +134,7 @@ public class Movement : MonoBehaviour
         float finalMovement = moveX * Time.fixedDeltaTime * 100 * speed;
         if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.3f;
         rb.velocity = new Vector2(Mathf.Clamp(finalMovement, -maxSpeed, maxSpeed), rb.velocity.y);
-
+        animator.SetFloat("VelocityX", Mathf.Abs(finalMovement));
         platformPush = Vector2.zero;
         // Sprite rotation
         if (rb.velocity.x < 0) rb.transform.localScale = new Vector3(-1, 1, 1);
@@ -156,6 +156,11 @@ public class Movement : MonoBehaviour
             canJump = true;
             canWallJump = true;
             animator.SetTrigger("HitGround");
+        }
+
+        if (Util.VecAlmostEqual(Vector2.left, col.contacts[0].normal, 0.001f))
+        {
+            movementPush = 0f;
         }
         /*
         if (col.gameObject.tag == "RotPlatform")
