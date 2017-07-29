@@ -14,10 +14,15 @@ public class MovingPlatform : MonoBehaviour
     public float lerpTime = 3f;
     float currentLerpTime = 0;
 
+    Vector3 lastFramesPosition;
+    public Vector2 velocity;
+
     private void Start()
     {
         startPosition = transform.position;
         targetPosition = transform.position + targetPosition;
+        lastFramesPosition = transform.position;
+        velocity = Vector2.zero;
     }
 
     private void Update()
@@ -33,6 +38,10 @@ public class MovingPlatform : MonoBehaviour
             startPosition = temp;
             currentLerpTime = 0;
         }
+
+        velocity = (transform.position - lastFramesPosition) / Time.deltaTime;
+
+        lastFramesPosition = transform.position;
     }
 
 #if UNITY_EDITOR
