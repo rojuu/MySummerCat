@@ -99,14 +99,14 @@ public class Movement : MonoBehaviour
 
             else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
 
-            if (hitInfo.distance < 0.52f && hitInfo.distance != 0 && (movementPush < movPushX * 0.7f && movementPush > movPushX * 0.7f))
+            if (hitInfo.distance < 0.52f && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
             {
                 moveX = 0;
                 Debug.Log(rb.velocity.y);
                 rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
             }
         }
-        //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
+        if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
 
         if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
         if (moveX < 0) moveX = (moveX + Mathf.Clamp01(movementPush));
@@ -119,7 +119,6 @@ public class Movement : MonoBehaviour
             maxSpeed = moveX * runningSpeed;
         }
         rb.velocity = new Vector2(Mathf.Clamp(moveX * Time.fixedDeltaTime * 100 * speed, -maxSpeed, maxSpeed), rb.velocity.y);
-
 
         // Sprite rotation
         if (rb.velocity.x < 0) rb.transform.localScale = new Vector3(-1, 1, 1);

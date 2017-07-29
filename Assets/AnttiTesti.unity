@@ -321,7 +321,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 6.12
+  runningSpeed: 0
   jumpStrength: 22
+  slideSpeed: 2
+  movPushTime: 1
+  movPushX: 3
 --- !u!1 &429095700
 GameObject:
   m_ObjectHideFlags: 0
