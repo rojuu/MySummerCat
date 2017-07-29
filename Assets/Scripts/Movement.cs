@@ -30,7 +30,7 @@ public class Movement : MonoBehaviour
     bool isDead;
 
     RaycastHit2D hitInfo;
-
+    TrailRenderer trail;
     Animator animator;
 
 
@@ -39,6 +39,7 @@ public class Movement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        trail = GetComponentInChildren<TrailRenderer>();
     }
 
     void Update()
@@ -59,7 +60,7 @@ public class Movement : MonoBehaviour
             else
             {
                 hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.left);
-                if (hitInfo.distance < 0.6f && hitInfo.collider.tag != "Lava")
+                if (hitInfo.distance < 0.55f && hitInfo.collider.tag != "Lava")
                 {
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                     movementPush = movPushX;
@@ -69,7 +70,7 @@ public class Movement : MonoBehaviour
                 else
                 {
                     hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.right);
-                    if (hitInfo.distance < 0.6f && hitInfo.collider.tag != "Lava")
+                    if (hitInfo.distance < 0.55f && hitInfo.collider.tag != "Lava")
                     {
                         rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                         movementPush = -movPushX;
@@ -104,16 +105,19 @@ public class Movement : MonoBehaviour
             }
             else if (moveX > 0)
             {
-                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.52f, 0, Vector2.right);
+                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 1f, 0, Vector2.right);
                 //Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector3.right, Color.red);
             }
 
             else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
 
-            if (hitInfo.distance < 0.52f && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
+            if (hitInfo.distance < 0.4f && hitInfo.collider.tag != "Lava" && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
             {
                 moveX = 0;
                 wallClinging = true;
+                //if (rb.velocity.x < 0) trail.transform.position = transform.position - new Vector3(0.3f, 0, 0);
+                //else if (rb.velocity.x > 0) trail.transform.position = transform.position + new Vector3(0.3f, 0, 0);
+
                 rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
                 animator.SetBool("WallCling", true);
             }
@@ -132,9 +136,9 @@ public class Movement : MonoBehaviour
             maxSpeed = speed * runningSpeed;
         }
         float finalMovement = moveX * Time.fixedDeltaTime * 100 * speed;
-        if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.3f;
+        if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.09f;
         rb.velocity = new Vector2(Mathf.Clamp(finalMovement, -maxSpeed, maxSpeed), rb.velocity.y);
-        animator.SetFloat("VelocityX", Mathf.Abs(finalMovement));
+        animator.SetFloat("VelocityX", Mathf.Abs(moveX));
         platformPush = Vector2.zero;
         // Sprite rotation
         if (rb.velocity.x < 0) rb.transform.localScale = new Vector3(-1, 1, 1);

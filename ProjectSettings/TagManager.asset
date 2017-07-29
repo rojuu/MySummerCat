@@ -8,6 +8,7 @@ TagManager:
   - platform
   - RotPlatform
   - MovPlatform
+  - Lava
   layers:
   - Default
   - TransparentFX
