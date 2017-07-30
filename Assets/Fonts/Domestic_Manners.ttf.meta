@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 7a566190691ff3c4a844bfabf3713098
+timeCreated: 1501403188
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Domestic Manners
+  fontNames:
+  - Domestic Manners
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
