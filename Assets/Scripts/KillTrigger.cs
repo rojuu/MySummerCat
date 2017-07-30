@@ -9,10 +9,14 @@ public class KillTrigger : MonoBehaviour
 {
 
     public Vector3 spawnPoint;
+    //public ParticleSystem killParticle;
+    public ParticleSystem killParticle;
+    Vector3 playerPosition;
 
     private void Start()
     {
         spawnPoint = spawnPoint + transform.position;
+        //GameObject.Find("Player").transform.position = playerPosition;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -34,6 +38,9 @@ public class KillTrigger : MonoBehaviour
     private void Kill(GameObject go)
     {
         go.GetComponent<Movement>().KillPlayer(spawnPoint, 0.3f);
+        //go.transform.position = playerPosition;
+        playerPosition = GameObject.FindWithTag("Player").transform.position;
+        Instantiate(killParticle, playerPosition, transform.rotation);
         //go.transform.position = spawnPoint;
     }
 

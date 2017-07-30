@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 15
-  runningSpeed: 1.5
+  runningSpeed: 1.25
   jumpStrength: 22
   slideSpeed: 4
   movPushTime: 1

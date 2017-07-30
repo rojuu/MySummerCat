@@ -2,26 +2,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraFollow : MonoBehaviour {
+public class CameraFollowMarioStyle : MonoBehaviour {
 
     public Transform target;
 
-    float switchPoint = 0.33f;
+    float switchPoint = 0.5f;
     float targetPoint = 0.11f;
+
+    float currentTarget;
+
+    Vector3 cameraPosition;
+
     Vector3 offset;
+
+    int dir = 1;
 
     private void Start() {
         offset = Vector3.zero;
-        offset.x -= targetPoint;
+        currentTarget = -targetPoint;
+        cameraPosition = target.position - offset * dir;
     }
 
     private void Update() {
         Vector3 viewPortDistFromCenter = Camera.main.ScreenToViewportPoint(Camera.main.WorldToScreenPoint(target.position));
         viewPortDistFromCenter = viewPortDistFromCenter * 2 - Vector3.one;
 
+        if (Mathf.Abs(viewPortDistFromCenter.x) < Mathf.Abs(targetPoint)) {
+            offset.x = (Camera.main.ViewportToWorldPoint(new Vector3((currentTarget + 1) / 2, 0, 10)) - transform.position).x;
+            cameraPosition = target.position - offset * dir;
+        }
 
+        if (Mathf.Abs(viewPortDistFromCenter.x) > Mathf.Abs(switchPoint)) {
+            dir *= -1;
+            offset.x = (Camera.main.ViewportToWorldPoint(new Vector3((currentTarget + 1) / 2, 0, 10)) - transform.position).x;
+            cameraPosition = target.position - offset * dir;
+        }
 
-        SetPosition(target.position + offset);
+        cameraPosition.y = target.transform.position.y;
+        SetPosition(cameraPosition);
+        print(Mathf.Abs(viewPortDistFromCenter.x));
     }
 
     void SetPosition(Vector3 pos) {
@@ -40,7 +59,7 @@ public class CameraFollow : MonoBehaviour {
         Gizmos.color = Color.red;
         pos = Camera.main.ViewportToWorldPoint(new Vector3((targetPoint + 1) / 2, 0, 10));
         pos2 = Camera.main.ViewportToWorldPoint(new Vector3((targetPoint + 1) / 2, 1, 10));
-        
+
         Gizmos.DrawLine(pos, pos2);
 
 
