@@ -24,15 +24,17 @@ public class Movement : MonoBehaviour
     float gravity = 9.81f;
     float maxSpeed = 0;
     bool canJump;
+    bool startJump;
     bool canWallJump;
     bool canMove = true;
     bool wallClinging;
     bool isDead;
+    int wallCurCling; // 0 none, 1 left, 2 right
 
     RaycastHit2D hitInfo;
     TrailRenderer trail;
     Animator animator;
-    
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -58,34 +60,54 @@ public class Movement : MonoBehaviour
             }
             else
             {
-                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.left);
-                if (hitInfo.distance < 0.7f && hitInfo.collider.tag != "Lava")
+                if (wallCurCling == 1)
                 {
+                    wallCurCling = 0;
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                     movementPush = movPushX;
                     canWallJump = false;
+                    wallCurCling = 0;
                     animator.SetTrigger("Jump");
+                    startJump = true;
                 }
-                else
+                else if (wallCurCling == 2)
                 {
-                    hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.right);
-                    if (hitInfo.distance < 0.7f && hitInfo.collider.tag != "Lava")
-                    {
-                        rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
-                        movementPush = -movPushX;
-                        canWallJump = false;
-                        animator.SetTrigger("Jump");
-                    }
+
+                    wallCurCling = 0;
+                    rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
+                    movementPush = -movPushX;
+                    canWallJump = false;
+                    wallCurCling = 0;
+                    startJump = true;
+                    animator.SetTrigger("Jump");
+
                 }
             }
         }
 
         //Jump End
-        if (movementPush > 0.1f) movementPush -= movPushTime * 5 * Time.deltaTime;
-        else if (movementPush < -0.1f) movementPush += movPushTime * 5 * Time.deltaTime;
+        if (movementPush > 0.1f)
+        {
+            movementPush -= movPushTime * 5 * Time.deltaTime;
+            CheckForWall(1);
+        }
+        else if (movementPush < -0.1f)
+        {
+            movementPush += movPushTime * 5 * Time.deltaTime;
+            CheckForWall(1);
+        }
         else if (movementPush < 0.1f || movementPush > -0.1f) movementPush = 0f;
 
         animator.SetFloat("VelocityY", rb.velocity.y);
+    }
+
+    bool CheckForWall(int wallDir)
+    {
+        Vector2 direction;
+        if (wallDir == 1) { direction = Vector2.left; } else { direction = Vector2.right; }
+        hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.52f, 0, direction);
+        if (hitInfo.distance < 0.6f && hitInfo.collider.tag != "Lava") { return true; }
+        else { return false; }
     }
 
     // Update is called once per frame
@@ -99,28 +121,49 @@ public class Movement : MonoBehaviour
         {
             if (moveX < 0)
             {
-                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.52f, 0, Vector2.left);
-                //Debug.DrawRay(transform.position + new Vector3(-0.5f, 0), Vector3.left, Color.red);
+                wallCurCling = 0;
+                if (wallCurCling != 1 && movementPush < 0.5f && movementPush > -0.5f)
+                {
+
+                    if (CheckForWall(1)) wallCurCling = 1;
+                    //Debug.DrawRay(transform.position + new Vector3(-0.5f, 0), Vector3.left, Color.red);
+                }
             }
             else if (moveX > 0)
             {
-                hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.52f, 0, Vector2.right);
-                //Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector3.right, Color.red);
+                wallCurCling = 0;
+                if (wallCurCling != 2 && movementPush < 0.5f && movementPush > -0.5f)
+                {
+                    if (CheckForWall(2)) wallCurCling = 2;
+                    //Debug.DrawRay(transform.position + new Vector3(0.5f, 0), Vector3.right, Color.red);
+                }
             }
 
             else { hitInfo = new RaycastHit2D(); hitInfo.distance = float.PositiveInfinity; }
-
-            if (hitInfo.distance < 0.5f && hitInfo.collider.tag != "Lava" && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
+        }
+        else
+        {
+            if (wallCurCling > 0 || rb.velocity.y != 0)
             {
-                moveX = 0;
-                wallClinging = true;
-                //if (rb.velocity.x < 0) trail.transform.position = transform.position - new Vector3(0.3f, 0, 0);
-                //else if (rb.velocity.x > 0) trail.transform.position = transform.position + new Vector3(0.3f, 0, 0);
-
-                rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
-                animator.SetBool("WallCling", true);
+                wallCurCling = 0;
+                if (CheckForWall(1)) { wallCurCling = 1; rb.transform.localScale = new Vector3(-1, 1, 1); } else if (CheckForWall(2)) { wallCurCling = 2; rb.transform.localScale = new Vector3(1, 1, 1); }
+                if (wallCurCling > 0)
+                {
+                    animator.SetBool("WallCling", true);
+                }
             }
         }
+        if (wallCurCling > 0 && (movementPush < movPushX * 0.7f && movementPush > -movPushX * 0.7f))
+        {
+            wallClinging = true;
+            //if (rb.velocity.x < 0) trail.transform.position = transform.position - new Vector3(0.3f, 0, 0);
+            //else if (rb.velocity.x > 0) trail.transform.position = transform.position + new Vector3(0.3f, 0, 0);
+
+            rb.velocity = new Vector2(moveX, 0.981f - slideSpeed);
+            animator.SetBool("WallCling", true);
+
+        }
+
         //if (movementPush > 0.2f || movementPush < -0.2f) moveX = 0;
 
         if (moveX > 0) moveX = (moveX - Mathf.Clamp01(movementPush));
@@ -136,9 +179,14 @@ public class Movement : MonoBehaviour
         }
         float finalMovement = moveX * Time.fixedDeltaTime * 100 * speed;
         if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.09f;
+        if (wallCurCling > 0 && !startJump)
+        {
+            rb.velocity = new Vector2(0f, 0.981f - slideSpeed); finalMovement = 0;
+        }
         rb.velocity = new Vector2(Mathf.Clamp(finalMovement, -maxSpeed, maxSpeed), rb.velocity.y);
         animator.SetFloat("VelocityX", Mathf.Abs(moveX));
         platformPush = Vector2.zero;
+        startJump = false;
         // Sprite rotation
         if (rb.velocity.x < 0) rb.transform.localScale = new Vector3(-1, 1, 1);
         else if (rb.velocity.x > 0) rb.transform.localScale = new Vector3(1, 1, 1);
@@ -154,7 +202,6 @@ public class Movement : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-
         if (Util.VecAlmostEqual(Vector2.up, col.contacts[0].normal, 0.001f))
         {
             canJump = true;
