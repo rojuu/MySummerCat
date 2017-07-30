@@ -32,9 +32,7 @@ public class Movement : MonoBehaviour
     RaycastHit2D hitInfo;
     TrailRenderer trail;
     Animator animator;
-
-
-    // Use this for initialization
+    
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();

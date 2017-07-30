@@ -8,7 +8,11 @@ public class CameraFollow : MonoBehaviour {
     Vector2 cameraPosition;
     Vector2 targetPosition;
     public float lerpSpeed = 8;
-    
+
+    private void Awake() {
+        EventManager.OnGameEnded += OnGameEnd;
+    }
+
     private void FixedUpdate() {
         cameraPosition = transform.position;
         targetPosition = target.position;
@@ -17,5 +21,9 @@ public class CameraFollow : MonoBehaviour {
 
     void SetPosition(Vector2 pos) {
         transform.position = new Vector3(pos.x, pos.y, -10);
+    }
+
+    void OnGameEnd() {
+        target = transform;
     }
 }
