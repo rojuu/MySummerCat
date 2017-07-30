@@ -28,6 +28,7 @@ public class Movement : MonoBehaviour
     bool canWallJump;
     bool canMove = true;
     bool wallClinging;
+    float curSlide;
     bool isDead;
     int wallCurCling; // 0 none, 1 left, 2 right
 
@@ -181,7 +182,12 @@ public class Movement : MonoBehaviour
         if (platformPush != Vector2.zero) finalMovement += platformPush.x * 1.09f;
         if (wallCurCling > 0 && !startJump)
         {
-            rb.velocity = new Vector2(0f, 0.981f - slideSpeed); finalMovement = 0;
+            curSlide = 1;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                curSlide = slideSpeed * runningSpeed * 2;
+            }
+            rb.velocity = new Vector2(0f, 0.981f - curSlide); finalMovement = 0;
         }
         rb.velocity = new Vector2(Mathf.Clamp(finalMovement, -maxSpeed, maxSpeed), rb.velocity.y);
         animator.SetFloat("VelocityX", Mathf.Abs(moveX));
