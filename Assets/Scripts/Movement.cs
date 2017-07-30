@@ -54,6 +54,7 @@ public class Movement : MonoBehaviour
                 rb.velocity = new Vector2(0, jumpStrength);
                 canJump = false;
                 animator.SetTrigger("Jump");
+                SoundPlayer.PlaySound(SoundPlayer.JumpSound, transform.position, transform);
             }
             else
             {
@@ -218,16 +219,17 @@ public class Movement : MonoBehaviour
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
         movementPush = 0f;
+        SoundPlayer.PlaySound(SoundPlayer.DeathSound, transform.position, transform);
         StartCoroutine(IsDead(true, pos, delay));
     }
 
     IEnumerator IsDead(bool val, Vector3 pos, float delay)
     {
         yield return new WaitForSeconds(delay);
-        GetComponentInChildren<TrailRenderer>().enabled = true;
         GetComponent<SpriteRenderer>().enabled = true;
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
         transform.position = pos;
         canMove = val;
+        GetComponentInChildren<TrailRenderer>().enabled = true;
     }
 }

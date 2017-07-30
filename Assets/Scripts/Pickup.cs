@@ -8,7 +8,9 @@ public class Pickup : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision) {
         if(collision.tag == "Player") {
-            Instantiate(coinParticle, transform.position, transform.rotation);
+            GameObject coin = Instantiate(coinParticle, transform.position, transform.rotation).gameObject;
+            SoundPlayer.PlaySound(SoundPlayer.CoinSound, coin.transform.position, coin.transform.parent);
+
             GameManager.Score++;
             Destroy(gameObject);
         }
