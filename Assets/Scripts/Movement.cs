@@ -58,7 +58,7 @@ public class Movement : MonoBehaviour
             else
             {
                 hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.left);
-                if (hitInfo.distance < 0.6f && hitInfo.collider.tag != "Lava")
+                if (hitInfo.distance < 0.7f && hitInfo.collider.tag != "Lava")
                 {
                     rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                     movementPush = movPushX;
@@ -68,7 +68,7 @@ public class Movement : MonoBehaviour
                 else
                 {
                     hitInfo = Physics2D.BoxCast(transform.position, Vector2.one * 0.5f, 0, Vector2.right);
-                    if (hitInfo.distance < 0.6f && hitInfo.collider.tag != "Lava")
+                    if (hitInfo.distance < 0.7f && hitInfo.collider.tag != "Lava")
                     {
                         rb.velocity = new Vector2(0, jumpStrength * 1.3f * 0.71f);
                         movementPush = -movPushX;
@@ -211,6 +211,7 @@ public class Movement : MonoBehaviour
         GetComponentInChildren<TrailRenderer>().enabled = false;
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+        movementPush = 0f;
         StartCoroutine(IsDead(true, pos, delay));
     }
 
