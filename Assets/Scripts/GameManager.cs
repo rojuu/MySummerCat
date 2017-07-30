@@ -13,4 +13,13 @@ public static class GameManager {
             score = value;
         }
     }
+
+    public static void EndGame() {
+        EventManager.TriggerOnGameEnd();
+    }
+
+    public static void PlayAgain() {
+        EventManager.TriggerPlayAgain();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+    }
 }
