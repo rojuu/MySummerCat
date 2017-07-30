@@ -39,7 +39,7 @@ public class KillTrigger : MonoBehaviour
     {
         go.GetComponent<Movement>().KillPlayer(spawnPoint, 0.3f);
         //go.transform.position = playerPosition;
-        GameObject.Find("Player").transform.position = playerPosition;
+        playerPosition = GameObject.FindWithTag("Player").transform.position;
         Instantiate(killParticle, playerPosition, transform.rotation);
         //go.transform.position = spawnPoint;
     }
