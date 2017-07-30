@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4862150120872210}
   - component: {fileID: 198876973532695114}
   - component: {fileID: 199629812489186776}
+  - component: {fileID: 114794462732836638}
   m_Layer: 0
   m_Name: CoinPoof
   m_TagString: Untagged
@@ -41,6 +42,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114794462732836638
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1350903797215068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d838725bccb92cb4bab3a7d8f7d10def, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifeTime: 5
 --- !u!198 &198876973532695114
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -252,7 +265,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.5
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
