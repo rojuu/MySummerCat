@@ -54,5 +54,5 @@ MonoBehaviour:
   soundSourcePrefab: {fileID: 1891108142242112, guid: dc228e58fee15bb45a24d3da2daa965a,
     type: 2}
   jumpSound: {fileID: 0}
-  coinSound: {fileID: 8300000, guid: 8a78d332ecbea934290da2e011cfff8c, type: 3}
+  coinSound: {fileID: 8300000, guid: 5d58f3a7b26bed84fbd4c465a672efd7, type: 3}
   deathSound: {fileID: 8300000, guid: eeed67dc291a91e43bed150b8a8cfb31, type: 3}
